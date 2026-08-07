@@ -1,12 +1,11 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/ui/Button';
-import { ArrowRight, Sparkles, Zap, Users } from 'lucide-react';
+import { ArrowRight, Sparkles, Users } from 'lucide-react';
 
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-hero pt-28 pb-20">
-      {/* Animated background orbs */}
       <div className="absolute inset-0 -z-10 opacity-30 dark:opacity-20">
         <div className="floating-circle absolute top-16 left-10 h-72 w-72 rounded-full bg-primary-300 blur-3xl" />
         <div className="floating-circle-reverse absolute bottom-10 right-20 h-80 w-80 rounded-full bg-accent-300 blur-3xl" />

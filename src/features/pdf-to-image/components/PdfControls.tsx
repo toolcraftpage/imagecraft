@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
+import type { PDFDocumentProxy } from 'pdfjs-dist';
 import Button from '@/shared/components/ui/Button';
 import {
   Upload,
@@ -10,12 +11,7 @@ import {
   X,
 } from 'lucide-react';
 
-// Multiple fallback worker URLs
-const WORKER_URLS = [
-  `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`,
-  `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`,
-];
-pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URLS[0];
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 interface PageInfo {
   index: number;
@@ -33,7 +29,7 @@ export default function PdfControls() {
   const [previewPage, setPreviewPage] = useState<number | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const pdfDocRef = useRef<any>(null);
+  const pdfDocRef = useRef<PDFDocumentProxy | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -48,17 +44,8 @@ export default function PdfControls() {
 
     try {
       const arrayBuffer = await file.arrayBuffer();
-
-      // Timeout after 30 seconds
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('PDF loading timed out. Check your internet connection.')), 30000)
-      );
-
-      const pdfPromise = pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-      const pdf = await Promise.race([pdfPromise, timeoutPromise]);
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       pdfDocRef.current = pdf;
-
       const pageInfos: PageInfo[] = [];
       const thumbnailScale = 0.5;
       for (let i = 1; i <= pdf.numPages; i++) {
@@ -68,43 +55,14 @@ export default function PdfControls() {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         const ctx = canvas.getContext('2d')!;
-        await page.render({ canvasContext: ctx, viewport }).promise;
+        await page.render({ canvasContext: ctx, viewport } as any).promise;
         pageInfos.push({ index: i, thumbnail: canvas.toDataURL('image/png') });
       }
-
       setPages(pageInfos);
       setSelectedPages(new Set(pageInfos.map((p) => p.index)));
     } catch (err: any) {
       console.error('PDF load error:', err);
-      // Try fallback worker
-      if (err.message?.includes('worker') || err.message?.includes('timeout') || err.name === 'TimeoutError') {
-        try {
-          // Switch to fallback worker
-          pdfjsLib.GlobalWorkerOptions.workerSrc = WORKER_URLS[1];
-          const arrayBuffer = await file.arrayBuffer();
-          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-          pdfDocRef.current = pdf;
-          const pageInfos: PageInfo[] = [];
-          const thumbnailScale = 0.5;
-          for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const viewport = page.getViewport({ scale: thumbnailScale });
-            const canvas = document.createElement('canvas');
-            canvas.width = viewport.width;
-            canvas.height = viewport.height;
-            const ctx = canvas.getContext('2d')!;
-            await page.render({ canvasContext: ctx, viewport }).promise;
-            pageInfos.push({ index: i, thumbnail: canvas.toDataURL('image/png') });
-          }
-          setPages(pageInfos);
-          setSelectedPages(new Set(pageInfos.map((p) => p.index)));
-          return;
-        } catch (fallbackErr: any) {
-          setError(`Failed to load PDF. ${fallbackErr.message || 'The file may be corrupted or your connection is unstable.'}`);
-        }
-      } else {
-        setError(`Failed to load PDF. ${err.message || 'The file may be corrupted or password-protected.'}`);
-      }
+      setError(`Failed to load PDF. ${err.message || 'The file may be corrupted or password-protected.'}`);
     } finally {
       setLoading(false);
     }
@@ -146,7 +104,7 @@ export default function PdfControls() {
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     const ctx = canvas.getContext('2d')!;
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    await page.render({ canvasContext: ctx, viewport } as any).promise;
     const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
     return canvas.toDataURL(mimeType, quality / 100);
   };

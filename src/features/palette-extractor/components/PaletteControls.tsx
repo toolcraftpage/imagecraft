@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { loadImage } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
-import { Copy, Download, RefreshCw } from 'lucide-react';
+import { RefreshCw, Download } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
 
 // ---------- Color extraction logic ----------
@@ -11,7 +11,7 @@ function extractColors(
   ignoreBackground: boolean
 ): string[] {
   const canvas = document.createElement('canvas');
-  const sampleSize = Math.min(img.width, img.height, 200); // sample size for speed
+  const sampleSize = Math.min(img.width, img.height, 200);
   const ratio = sampleSize / Math.max(img.width, img.height);
   canvas.width = img.width * ratio;
   canvas.height = img.height * ratio;
@@ -25,7 +25,6 @@ function extractColors(
     const g = imageData[i + 1];
     const b = imageData[i + 2];
 
-    // Optionally ignore near-white and near-black pixels (background colors)
     if (ignoreBackground) {
       const brightness = (r + g + b) / 3;
       if (brightness < 30 || brightness > 225) continue;
@@ -36,10 +35,7 @@ function extractColors(
 
   if (pixels.length === 0) return [];
 
-  // k-means clustering
   const centroids = kMeans(pixels, colorCount, 10);
-
-  // Sort by brightness for display
   centroids.sort((a, b) => (a[0] + a[1] + a[2]) - (b[0] + b[1] + b[2]));
 
   return centroids.map(
@@ -53,7 +49,6 @@ function kMeans(
   k: number,
   maxIter: number = 10
 ): [number, number, number][] {
-  // Initialize centroids using k-means++ for better spread
   let centroids: [number, number, number][] = [pixels[Math.floor(Math.random() * pixels.length)]];
   for (let i = 1; i < k; i++) {
     const distances = pixels.map((p) => {
@@ -110,12 +105,10 @@ export default function PaletteControls({ image }: { image: ImageFile }) {
   const [ignoreBg, setIgnoreBg] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
-  // Load image
   useEffect(() => {
     loadImage(image.preview).then(setImg);
   }, [image]);
 
-  // Extract colors whenever settings change
   useEffect(() => {
     if (!img) return;
     const palette = extractColors(img, colorCount, ignoreBg);
@@ -138,7 +131,6 @@ export default function PaletteControls({ image }: { image: ImageFile }) {
     canvas.height = swatchHeight + 30;
     const ctx = canvas.getContext('2d')!;
 
-    // Draw white background
     ctx.fillStyle = '#ffffff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -161,7 +153,6 @@ export default function PaletteControls({ image }: { image: ImageFile }) {
 
   return (
     <div className="mt-8 space-y-6">
-      {/* Controls */}
       <div className="rounded-card border p-6 bg-surface dark:bg-surface space-y-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
           Palette Settings
@@ -204,7 +195,6 @@ export default function PaletteControls({ image }: { image: ImageFile }) {
         </div>
       </div>
 
-      {/* Image preview */}
       {img && (
         <div className="rounded-card border overflow-hidden bg-gray-50 dark:bg-gray-800 p-2">
           <img
@@ -215,7 +205,6 @@ export default function PaletteControls({ image }: { image: ImageFile }) {
         </div>
       )}
 
-      {/* Palette display */}
       <div className="rounded-card border p-6 bg-surface dark:bg-surface">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           Extracted Palette

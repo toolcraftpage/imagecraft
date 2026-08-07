@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { loadImage, rotateImage, canvasToBlob, downloadFile } from '@/shared/services/imageUtils';
+import { loadImage, rotateImage, canvasToBlob } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
 import Input from '@/shared/components/ui/Input';
 import type { ImageFile } from '@/shared/types';

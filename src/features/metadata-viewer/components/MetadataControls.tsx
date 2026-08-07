@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
 
-// ---------- Helper: group parsed metadata into sections ----------
 interface MetadataSection {
   id: string;
   icon: React.ReactNode;
@@ -46,7 +45,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
 
     exifr
       .parse(image.file, {
-        pick: true,
+        pick: ['*'],   // fixed: array instead of boolean
         gps: true,
         interop: true,
         xmp: true,
@@ -82,11 +81,10 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
     };
   }, [image]);
 
-  // Build categorized sections from exifr output
   function buildSections(data: any, image: ImageFile): MetadataSection[] {
     const sections: MetadataSection[] = [];
 
-    // File info section (always present)
+    // File info section
     const fileInfo: Record<string, any> = {
       'File Name': image.file.name,
       'File Size': formatBytes(image.file.size),
