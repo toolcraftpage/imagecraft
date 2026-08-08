@@ -9,7 +9,6 @@ import {
   Settings,
   Grid3X3,
   Plus,
-  X,
   GripVertical,
   Eye,
   EyeOff,

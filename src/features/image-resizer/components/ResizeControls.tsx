@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
-import { loadImage, resizeImage, canvasToBlob, downloadFile } from '@/shared/services/imageUtils';
+import { loadImage, resizeImage, canvasToBlob } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
 import { Download, Image as ImageIcon, Lock, Unlock } from 'lucide-react';
-import type { ImageFile } from '@/shared/types';
 
 interface Preset {
   label: string;
@@ -31,6 +30,10 @@ function formatAspectRatio(w: number, h: number): string {
   return `${w / divisor}∶${h / divisor}`;
 }
 
+interface ResizeControlsProps {
+  image: { file: File; preview: string; dimensions: { width: number; height: number } | null };
+}
+
 export default function ResizeControls({ image }: ResizeControlsProps) {
   const [widthStr, setWidthStr] = useState('0');
   const [heightStr, setHeightStr] = useState('0');
@@ -41,7 +44,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const [allowUpscale, setAllowUpscale] = useState(false);
 
-  // Parse current numeric values (0 if empty or invalid)
   const width = useMemo(() => {
     const n = parseInt(widthStr, 10);
     return isNaN(n) || n < 1 ? 0 : n;
@@ -52,7 +54,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
     return isNaN(n) || n < 1 ? 0 : n;
   }, [heightStr]);
 
-  // Initialize from image dimensions
   useEffect(() => {
     if (!image.dimensions) return;
     setWidthStr(String(image.dimensions.width));
@@ -62,7 +63,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
   }, [image]);
 
   const handleWidthChange = (value: string) => {
-    // Allow empty string, digits only, no negative
     setWidthStr(value.replace(/[^0-9]/g, ''));
     setActivePreset(null);
     if (locked && value !== '') {
@@ -120,9 +120,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
     }
   };
 
-  const maxW = image.dimensions?.width || 5000;
-  const maxH = image.dimensions?.height || 5000;
-
   const currentAspectStr = useMemo(
     () => (width > 0 && height > 0 ? formatAspectRatio(width, height) : ''),
     [width, height],
@@ -132,7 +129,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
     <div className="space-y-6 rounded-card border border-gray-200 bg-surface p-6 shadow-card dark:border-gray-700 dark:bg-surface">
       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Resize Image</h3>
 
-      {/* Presets */}
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((preset) => (
           <Button
@@ -146,7 +142,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
         ))}
       </div>
 
-      {/* Width – Lock – Height */}
       <div className="flex flex-col items-center gap-4 sm:flex-row">
         <div className="w-full sm:flex-1">
           <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -193,7 +188,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
         </div>
       </div>
 
-      {/* Aspect ratio badge below inputs */}
       {locked && currentAspectStr && (
         <div className="flex justify-center">
           <span className="inline-flex items-center rounded-full bg-primary-50 px-3 py-1 text-sm font-medium text-primary-700 dark:bg-primary-900 dark:text-primary-300">
@@ -202,7 +196,6 @@ export default function ResizeControls({ image }: ResizeControlsProps) {
         </div>
       )}
 
-      {/* Additional controls */}
       <div className="flex flex-wrap items-center gap-4 text-sm">
         <label className="flex items-center gap-2 text-gray-600 dark:text-gray-300">
           <input

@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { loadImage, canvasToBlob, downloadFile } from '@/shared/services/imageUtils';
+import { loadImage, canvasToBlob } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
 import { Download } from 'lucide-react';
-import type { ImageFile } from '@/shared/types';
 
 type OutputFormat = 'image/jpeg' | 'image/png' | 'image/webp';
 type SizeUnit = 'KB' | 'MB';
+
+interface CompressorControlsProps {
+  image: { file: File; preview: string };
+}
 
 export default function CompressorControls({ image }: CompressorControlsProps) {
   const [quality, setQuality] = useState(80);
@@ -16,7 +18,6 @@ export default function CompressorControls({ image }: CompressorControlsProps) {
   const [compressedSize, setCompressedSize] = useState<number>(0);
   const [processing, setProcessing] = useState(false);
 
-  // Target size – using text input to preserve leading zeros/decimals
   const [targetValue, setTargetValue] = useState<string>('');
   const [targetUnit, setTargetUnit] = useState<SizeUnit>('KB');
   const [targetMode, setTargetMode] = useState(false);
@@ -101,7 +102,6 @@ export default function CompressorControls({ image }: CompressorControlsProps) {
   );
 
   const handleTargetChange = (value: string, unit: SizeUnit) => {
-    // Keep exactly what the user types (text)
     setTargetValue(value);
     setTargetUnit(unit);
 
@@ -180,7 +180,6 @@ export default function CompressorControls({ image }: CompressorControlsProps) {
         </div>
       </div>
 
-      {/* Target size – text input preserves leading zeros/decimals */}
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Or set exact file size

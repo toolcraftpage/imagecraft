@@ -1,4 +1,4 @@
-import DonationCard from './DonationCard';
+import DonationCard from '@/shared/components/donation/DonationCard';
 import Container from '@/shared/components/ui/Container';
 
 export default function DonationSection() {

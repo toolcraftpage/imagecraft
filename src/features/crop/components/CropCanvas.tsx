@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { loadImage, cropImage, canvasToBlob, downloadFile } from '@/shared/services/imageUtils';
+import { loadImage, cropImage, canvasToBlob } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
 import { Crop as CropIcon, Download } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
@@ -34,7 +34,6 @@ export default function CropCanvas({ image }: CropCanvasProps) {
   const [cropDimensions, setCropDimensions] = useState({ w: 0, h: 0 });
   const scaleRef = useRef(1);
 
-  // Load image and set initial crop
   useEffect(() => {
     if (!image.preview) return;
     loadImage(image.preview).then((loadedImg) => {
@@ -63,16 +62,12 @@ export default function CropCanvas({ image }: CropCanvasProps) {
     canvas.width = img.width * scale;
     canvas.height = img.height * scale;
 
-    // 1. Draw the full original image
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    // 2. Draw a semi-transparent dark overlay over the whole canvas
     ctx.save();
     ctx.fillStyle = 'rgba(0, 0, 0, 0.45)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // 3. Redraw the original image ONLY inside the crop rectangle
-    //    by clipping to that rectangle.
     ctx.beginPath();
     ctx.rect(
       crop.x * scale,
@@ -80,11 +75,10 @@ export default function CropCanvas({ image }: CropCanvasProps) {
       crop.width * scale,
       crop.height * scale,
     );
-    ctx.clip();               // restrict all drawing to this area
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height); // redraw original
+    ctx.clip();
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     ctx.restore();
 
-    // 4. Draw crop border (outside clipping, so it stays visible)
     ctx.strokeStyle = '#6366f1';
     ctx.lineWidth = 2;
     ctx.strokeRect(
@@ -94,7 +88,6 @@ export default function CropCanvas({ image }: CropCanvasProps) {
       crop.height * scale,
     );
 
-    // 5. Corner handles
     const handleSize = 10;
     ctx.fillStyle = '#fff';
     ctx.strokeStyle = '#6366f1';
@@ -253,7 +246,6 @@ export default function CropCanvas({ image }: CropCanvasProps) {
 
   return (
     <div className="space-y-6">
-      {/* Preset buttons */}
       <div className="flex flex-wrap gap-2">
         {PRESETS.map((preset) => (
           <Button
@@ -267,7 +259,6 @@ export default function CropCanvas({ image }: CropCanvasProps) {
         ))}
       </div>
 
-      {/* Interactive canvas with white background for clarity */}
       <div className="overflow-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-950">
         <canvas
           ref={canvasRef}
@@ -279,7 +270,6 @@ export default function CropCanvas({ image }: CropCanvasProps) {
         />
       </div>
 
-      {/* Info & actions */}
       <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
         <span>Crop: {cropDimensions.w} × {cropDimensions.h} px</span>
         <div className="flex gap-2">

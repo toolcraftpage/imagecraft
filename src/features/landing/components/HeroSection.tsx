@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Button from '@/shared/components/ui/Button';
-import { ArrowRight, Sparkles, Users } from 'lucide-react';
+import { ArrowRight, Users } from 'lucide-react';
 
 export default function HeroSection() {
   return (
