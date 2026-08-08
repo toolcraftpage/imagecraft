@@ -61,7 +61,8 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
   // ---------- Page breaks (on image indices) ----------
   const [pageBreakAfterImg, setPageBreakAfterImg] = useState<Set<number>>(new Set());
 
-  const addPageBreak = (imgIndex: number) => setPageBreakAfterImg((prev) => new Set(prev).add(imgIndex));
+  const addPageBreak = (imgIndex: number) =>
+    setPageBreakAfterImg((prev) => new Set(prev).add(imgIndex));
   const removePageBreak = (imgIndex: number) => {
     setPageBreakAfterImg((prev) => {
       const next = new Set(prev);
@@ -90,38 +91,35 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
   const pagesList = pages();
 
   // ---------- Per‑page layout ----------
-  // Store desired images per page (null means auto‑grid)
   const [imagesPerPage, setImagesPerPage] = useState<Record<number, number | null>>({});
-  // Store manual cols/rows overrides (null means derived from imagesPerPage)
   const [manualLayout, setManualLayout] = useState<Record<number, { cols: number; rows: number } | null>>({});
 
-  // Derive effective layout (cols/rows) for a page from its imagesPerPage value
-  const getLayout = useCallback((pageIdx: number, imageCount: number) => {
-    const manual = manualLayout[pageIdx];
-    if (manual) return manual;
+  const getLayout = useCallback(
+    (pageIdx: number, imageCount: number) => {
+      const manual = manualLayout[pageIdx];
+      if (manual) return manual;
 
-    const perPage = imagesPerPage[pageIdx] ?? null;
-    if (perPage !== null && perPage > 0) {
-      // Fit exactly `perPage` images on the page with a square‑ish grid
-      const cols = Math.ceil(Math.sqrt(perPage));
-      const rows = Math.ceil(perPage / cols);
+      const perPage = imagesPerPage[pageIdx] ?? null;
+      if (perPage !== null && perPage > 0) {
+        const cols = Math.ceil(Math.sqrt(perPage));
+        const rows = Math.ceil(perPage / cols);
+        return { cols, rows };
+      }
+
+      // Auto‑grid
+      if (imageCount <= 1) return { cols: 1, rows: 1 };
+      const cols = Math.ceil(Math.sqrt(imageCount));
+      const rows = Math.ceil(imageCount / cols);
       return { cols, rows };
-    }
+    },
+    [imagesPerPage, manualLayout],
+  );
 
-    // Default: auto‑grid based on actual image count
-    if (imageCount <= 1) return { cols: 1, rows: 1 };
-    const cols = Math.ceil(Math.sqrt(imageCount));
-    const rows = Math.ceil(imageCount / cols);
-    return { cols, rows };
-  }, [imagesPerPage, manualLayout]);
-
-  // Reset to auto layout (remove per‑page settings)
   const resetToAutoLayout = () => {
     setImagesPerPage({});
     setManualLayout({});
   };
 
-  // Set every page to 1 image per page
   const setAllToOnePerPage = () => {
     const newImagesPerPage: Record<number, number> = {};
     pagesList.forEach((_, idx) => {
@@ -131,7 +129,7 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
     setManualLayout({});
   };
 
-  // ---------- Enhanced Drag & Drop ----------
+  // ---------- Drag & Drop ----------
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dropTarget, setDropTarget] = useState<number | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -202,7 +200,8 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
     if (includedOrder.length === 0) return;
     setGenerating(true);
 
-    const [pageW, pageH] = pageSize === 'Custom' ? [customWidth, customHeight] : PAGE_SIZES[pageSize];
+    const [pageW, pageH] =
+      pageSize === 'Custom' ? [customWidth, customHeight] : PAGE_SIZES[pageSize];
     const isLandscape = orientation === 'landscape';
     const finalW = isLandscape ? pageH : pageW;
     const finalH = isLandscape ? pageW : pageH;
@@ -259,6 +258,7 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
               drawW = drawH * aspect;
             }
           } else {
+            // cover
             if (aspect > cellW / cellH) {
               drawH = cellH;
               drawW = drawH * aspect;
@@ -277,7 +277,19 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
 
     doc.save('images.pdf');
     setGenerating(false);
-  }, [includedOrder, pagesList, getLayout, pageSize, orientation, customWidth, customHeight, margin, fitMode, gap, images]);
+  }, [
+    includedOrder,
+    pagesList,
+    getLayout,
+    pageSize,
+    orientation,
+    customWidth,
+    customHeight,
+    margin,
+    fitMode,
+    gap,
+    images,
+  ]);
 
   const loadImageElement = (src: string): Promise<HTMLImageElement> =>
     new Promise((resolve, reject) => {
@@ -287,18 +299,7 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
       img.src = src;
     });
 
-  // Total pages count
-  const totalPages = pagesList.reduce((acc, seg) => {
-    const segImages = includedOrder.slice(seg.start, seg.end + 1);
-    const layout = getLayout(acc, segImages.length); // careful: acc is index here, not correct
-    // need to compute using segment index
-    const count = seg.end - seg.start + 1;
-    const layoutForSeg = getLayout(pagesList.indexOf(seg), count);
-    const perPage = layoutForSeg.cols * layoutForSeg.rows;
-    return acc + Math.ceil(count / perPage);
-  }, 0);
-
-  // recalculate total pages properly
+  // Final total page count (used in JSX)
   const totalPagesFixed = pagesList.reduce((acc, seg) => {
     const idx = pagesList.indexOf(seg);
     const count = seg.end - seg.start + 1;
@@ -433,7 +434,7 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
               const layout = getLayout(pageIdx, segImages.length);
               const capacity = layout.cols * layout.rows;
               const subPages = Math.ceil(segImages.length / capacity);
-              const currentPerPage = imagesPerPage[pageIdx] ?? capacity; // fallback to auto capacity
+              const currentPerPage = imagesPerPage[pageIdx] ?? capacity;
 
               return (
                 <div key={pageIdx} className="rounded-lg border dark:border-gray-700 p-3 space-y-2">
@@ -443,7 +444,6 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
                       {subPages > 1 ? ` → ${subPages} PDF pages` : ''})
                     </span>
                     <div className="flex items-center gap-3">
-                      {/* Images per page input */}
                       <div className="flex items-center gap-1">
                         <label className="text-xs text-gray-500">Images per page:</label>
                         <input
@@ -455,12 +455,11 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
                             const val = parseInt(e.target.value, 10);
                             if (isNaN(val) || val < 1) return;
                             setImagesPerPage((prev) => ({ ...prev, [pageIdx]: val }));
-                            setManualLayout((prev) => ({ ...prev, [pageIdx]: null })); // clear manual cols/rows
+                            setManualLayout((prev) => ({ ...prev, [pageIdx]: null }));
                           }}
                           className="w-16 rounded border px-1 py-0.5 text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white text-center"
                         />
                       </div>
-                      {/* Manual cols/rows override */}
                       <div className="flex items-center gap-1">
                         <label className="text-xs text-gray-500">Cols:</label>
                         <select
@@ -472,7 +471,9 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
                           }}
                           className="rounded border px-1 py-0.5 text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                         >
-                          {[1,2,3,4,5,6].map(c => <option key={c} value={c}>{c}</option>)}
+                          {[1, 2, 3, 4, 5, 6].map((c) => (
+                            <option key={c} value={c}>{c}</option>
+                          ))}
                         </select>
                         <span className="text-gray-400">×</span>
                         <select
@@ -484,7 +485,9 @@ export default function PdfControls({ images, onClear }: PdfControlsProps) {
                           }}
                           className="rounded border px-1 py-0.5 text-xs dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                         >
-                          {[1,2,3,4,5,6].map(r => <option key={r} value={r}>{r}</option>)}
+                          {[1, 2, 3, 4, 5, 6].map((r) => (
+                            <option key={r} value={r}>{r}</option>
+                          ))}
                         </select>
                       </div>
                     </div>
