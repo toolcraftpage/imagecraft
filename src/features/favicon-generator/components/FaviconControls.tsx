@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { loadImage } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
-import { Download, Globe } from 'lucide-react';
+import { Download } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
 
 const SIZES = [16, 32, 48, 64, 128, 256];
@@ -10,8 +10,7 @@ export default function FaviconControls({ image }: { image: ImageFile }) {
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [bgColor, setBgColor] = useState('#ffffff');
   const [useBg, setUseBg] = useState(false);
-  const [borderRadius, setBorderRadius] = useState(0); // 0-50% (relative to size)
-  const [selectedSize, setSelectedSize] = useState<number>(32);
+  const [borderRadius, setBorderRadius] = useState(0);
 
   // Load the source image
   useEffect(() => {

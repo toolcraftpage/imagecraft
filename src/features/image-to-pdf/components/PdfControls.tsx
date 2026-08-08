@@ -14,7 +14,6 @@ import {
   EyeOff,
   Info,
   LayoutList,
-  LayoutGrid,
 } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
 

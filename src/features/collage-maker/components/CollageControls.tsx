@@ -1,15 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { loadImage, canvasToBlob, downloadFile } from '@/shared/services/imageUtils';
+import { useState, useEffect, useRef } from 'react';
+import { loadImage, canvasToBlob } from '@/shared/services/imageUtils';
 import Button from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
 import {
   Download,
-  Grid3X3,
-  Grid,
+  Trash2,
   Plus,
   Minus,
-  RefreshCw,
-  Trash2,
+  Grid3X3,
 } from 'lucide-react';
 import type { ImageFile } from '@/shared/types';
 
@@ -43,8 +40,7 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
   const [borderWidth, setBorderWidth] = useState(0);
   const [borderColor, setBorderColor] = useState('#cccccc');
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [imageOrder, setImageOrder] = useState<number[]>([]); // indices to rearrange
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [imageOrder, setImageOrder] = useState<number[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const [loadedImgs, setLoadedImgs] = useState<HTMLImageElement[]>([]);
 
@@ -73,7 +69,7 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
     // Background
     ctx.fillStyle = bgColor;
     ctx.beginPath();
-    ctx.roundRect(0, 0, canvas.width, canvas.height, borderRadius);
+    (ctx as any).roundRect(0, 0, canvas.width, canvas.height, borderRadius);
     ctx.fill();
 
     for (let r = 0; r < rows; r++) {
@@ -89,14 +85,14 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
         if (borderWidth > 0) {
           ctx.fillStyle = borderColor;
           ctx.beginPath();
-          ctx.roundRect(x - borderWidth, y - borderWidth, cellW + 2 * borderWidth, cellH + 2 * borderWidth, borderRadius + borderWidth);
+          (ctx as any).roundRect(x - borderWidth, y - borderWidth, cellW + 2 * borderWidth, cellH + 2 * borderWidth, borderRadius + borderWidth);
           ctx.fill();
         }
 
         // Draw image with rounded corners
         ctx.save();
         ctx.beginPath();
-        ctx.roundRect(x, y, cellW, cellH, borderRadius);
+        (ctx as any).roundRect(x, y, cellW, cellH, borderRadius);
         ctx.clip();
         // Scale image to cover cell (cover mode)
         const scale = Math.max(cellW / img.width, cellH / img.height);
@@ -112,7 +108,7 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
           ctx.strokeStyle = borderColor;
           ctx.lineWidth = borderWidth;
           ctx.beginPath();
-          ctx.roundRect(x, y, cellW, cellH, borderRadius);
+          (ctx as any).roundRect(x, y, cellW, cellH, borderRadius);
           ctx.stroke();
         }
       }
@@ -132,15 +128,6 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
   };
 
   const totalCells = rows * cols;
-
-  // Reorder images by dragging (simple swap on click for now – can be extended)
-  const swapImages = (indexA: number, indexB: number) => {
-    setImageOrder(prev => {
-      const newOrder = [...prev];
-      [newOrder[indexA], newOrder[indexB]] = [newOrder[indexB], newOrder[indexA]];
-      return newOrder;
-    });
-  };
 
   const selectedImages = images.slice(0, totalCells);
   const remaining = images.length - totalCells;
