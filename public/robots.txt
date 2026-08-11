@@ -1,5 +1,3 @@
-@"
-User-agent: *
+﻿User-agent: *
 Allow: /
-Sitemap: https://imagecraft-alpha.vercel.app/sitemap.xml
-"@ | Set-Content public\robots.txt -Encoding UTF8
+Sitemap: https://imagecrafttool.vercel.app/sitemap.xml
