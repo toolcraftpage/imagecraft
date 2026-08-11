@@ -1,68 +1,90 @@
+@"
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://imagecrafttool.vercel.app/</loc>
+    <loc>https://imagecraft-alpha.vercel.app/</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/image-compressor</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/image-compressor</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/crop</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/crop</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/image-resizer</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/image-resizer</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/converter</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/converter</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/flip</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/flip</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/rotate</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/rotate</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/brightness</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/brightness</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/contrast</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/contrast</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/saturation</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/saturation</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/hue</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/hue</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/text-overlay</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/text-overlay</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/collage-maker</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/collage-maker</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/palette-extractor</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/palette-extractor</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/favicon-generator</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/favicon-generator</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/pdf-to-image</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/pdf-to-image</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/image-to-pdf</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/image-to-pdf</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/tools/metadata-viewer</loc>
+    <loc>https://imagecraft-alpha.vercel.app/tools/metadata-viewer</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/donate</loc>
+    <loc>https://imagecraft-alpha.vercel.app/donate</loc>
   </url>
+
   <url>
-    <loc>https://imagecrafttool.vercel.app/pdf-tools</loc>
+    <loc>https://imagecraft-alpha.vercel.app/pdf-tools</loc>
   </url>
 
 </urlset>
+"@ | Set-Content public\sitemap.xml -Encoding UTF8
