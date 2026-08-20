@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import * as pdfjsLib from 'pdfjs-dist';
-import type { PDFDocumentProxy } from 'pdfjs-dist';
+import type { PDFDocumentProxy, PDFPageProxy } from 'pdfjs-dist';
 import Button from '@/shared/components/ui/Button';
 import {
   Upload,
@@ -55,14 +55,14 @@ export default function PdfControls() {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         const ctx = canvas.getContext('2d')!;
-        await page.render({ canvasContext: ctx, viewport } as any).promise;
+        await page.render({ canvasContext: ctx, viewport } as Parameters<PDFPageProxy['render']>[0]).promise;
         pageInfos.push({ index: i, thumbnail: canvas.toDataURL('image/png') });
       }
       setPages(pageInfos);
       setSelectedPages(new Set(pageInfos.map((p) => p.index)));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('PDF load error:', err);
-      setError(`Failed to load PDF. ${err.message || 'The file may be corrupted or password-protected.'}`);
+      setError(`Failed to load PDF. ${err instanceof Error ? err.message : 'The file may be corrupted or password-protected.'}`);
     } finally {
       setLoading(false);
     }
@@ -104,7 +104,7 @@ export default function PdfControls() {
     canvas.width = viewport.width;
     canvas.height = viewport.height;
     const ctx = canvas.getContext('2d')!;
-    await page.render({ canvasContext: ctx, viewport } as any).promise;
+    await page.render({ canvasContext: ctx, viewport } as Parameters<PDFPageProxy['render']>[0]).promise;
     const mimeType = format === 'jpeg' ? 'image/jpeg' : format === 'webp' ? 'image/webp' : 'image/png';
     return canvas.toDataURL(mimeType, quality / 100);
   };
@@ -189,7 +189,7 @@ export default function PdfControls() {
             <div className="flex items-center gap-3 flex-wrap">
               <select
                 value={outputFormat}
-                onChange={(e) => setOutputFormat(e.target.value as any)}
+                onChange={(e) => setOutputFormat(e.target.value as 'png' | 'jpeg' | 'webp')}
                 className="rounded border px-2 py-1 text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
               >
                 <option value="png">PNG</option>

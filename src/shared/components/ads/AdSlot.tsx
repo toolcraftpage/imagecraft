@@ -2,6 +2,12 @@ import { useEffect, useRef } from 'react';
 import { useAds } from './AdProvider';
 import { Megaphone, ArrowRight } from 'lucide-react';
 
+declare global {
+  interface Window {
+    adsbygoogle?: Array<Record<string, unknown>> & { push: (...items: Record<string, unknown>[]) => number };
+  }
+}
+
 interface AdSlotProps {
   size?: 'leaderboard' | 'sidebar' | 'inline' | 'responsive';
   className?: string;
@@ -15,62 +21,57 @@ const sizeMap = {
 };
 
 export default function AdSlot({ size = 'sidebar', className = '' }: AdSlotProps) {
-  const { adsEnabled } = useAds();
+  const { adsEnabled, adsConfigured } = useAds();
   const adRef = useRef<HTMLModElement>(null);
 
   useEffect(() => {
-    if (adsEnabled && adRef.current && (window as any).adsbygoogle) {
+    if (adsEnabled && adRef.current && window.adsbygoogle) {
       try {
-        (window as any).adsbygoogle.push({});
+        window.adsbygoogle.push({});
       } catch (e) {
         console.error('AdSense error:', e);
       }
     }
   }, [adsEnabled]);
 
-  // ----- Beautiful placeholder when ads are disabled -----
-  if (!adsEnabled) {
+  if (!adsEnabled || !adsConfigured) {
     return (
       <div
-        className={`relative overflow-hidden rounded-xl bg-gradient-to-br from-primary-50 to-accent-50 p-5 shadow-inner dark:from-gray-700 dark:to-gray-800 ${className}`}
+        className={`relative overflow-hidden rounded-xl border border-border bg-[linear-gradient(135deg,rgba(91,95,239,0.08),rgba(124,58,237,0.06),rgba(15,23,42,0.02))] p-5 shadow-[var(--shadow-sm)] ${className}`}
         style={{ minHeight: sizeMap[size].height || 100 }}
       >
-        {/* Decorative circles */}
-        <div className="absolute -top-4 -right-4 h-16 w-16 rounded-full bg-primary-200/40 dark:bg-primary-500/10" />
-        <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-accent-200/40 dark:bg-accent-500/10" />
+        <div className="absolute -top-4 -right-4 h-16 w-16 rounded-full bg-accent-soft" />
+        <div className="absolute -bottom-4 -left-4 h-12 w-12 rounded-full bg-surface-muted" />
 
-        <div className="relative flex flex-col items-center justify-center h-full text-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 dark:bg-gray-600/50 shadow-sm">
-            <Megaphone size={20} className="text-primary-500 dark:text-primary-300" />
+        <div className="relative flex h-full flex-col items-center justify-center gap-3 text-center">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-elevated shadow-sm">
+            <Megaphone size={20} className="text-accent" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-              Advertise with us
-            </p>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 max-w-[180px]">
-              Reach thousands of designers and developers
+            <p className="text-sm font-semibold text-foreground">A calm space for sponsors</p>
+            <p className="mt-1 max-w-[180px] text-xs text-foreground-secondary">
+              Ads stay clearly labeled and never interrupt your workflow.
             </p>
           </div>
           <a
             href="mailto:ads@imagecraft.com"
-            className="inline-flex items-center gap-1 text-xs font-medium text-primary-600 dark:text-primary-400 hover:underline"
+            className="inline-flex items-center gap-1 text-xs font-medium text-accent hover:text-accent-hover hover:underline"
           >
-            Get started <ArrowRight size={12} />
+            Sponsor a placement <ArrowRight size={12} />
           </a>
         </div>
       </div>
     );
   }
 
-  // ----- Real AdSense unit (replace IDs with your own) -----
   return (
-    <div className={`flex items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800 ${className}`}>
+    <div className={`flex items-center justify-center overflow-hidden rounded-lg border border-border bg-surface-muted ${className}`}>
       <ins
         ref={adRef}
         className="adsbygoogle"
         style={{ display: 'block', width: sizeMap[size].width, height: sizeMap[size].height }}
-        data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"   // ← Replace with your AdSense ID
-        data-ad-slot="1234567890"                   // ← Replace with your ad unit ID
+        data-ad-client={import.meta.env.VITE_ADSENSE_CLIENT}
+        data-ad-slot={import.meta.env.VITE_ADSENSE_SLOT || undefined}
         data-ad-format="auto"
         data-full-width-responsive="true"
       />

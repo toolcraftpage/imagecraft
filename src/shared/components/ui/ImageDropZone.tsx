@@ -44,15 +44,25 @@ export default function ImageDropZone({
 
   return (
     <div className="space-y-6">
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple={multiple}
+        className="hidden"
+        style={{ display: 'none' }}
+        onChange={onFileInput}
+      />
+
       {images.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
           {images.map((img, idx) => (
             <div
               key={`${img.file.name}-${idx}`}
-              className="relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800"
+              className="relative overflow-hidden rounded-lg border border-border bg-surface-muted"
             >
               {img.error ? (
-                <div className="flex h-32 items-center justify-center text-red-500 text-sm">
+                <div className="flex h-32 items-center justify-center text-error text-sm">
                   {img.error}
                 </div>
               ) : img.preview ? (
@@ -62,14 +72,14 @@ export default function ImageDropZone({
                   className="h-32 w-full object-contain"
                 />
               ) : (
-                <div className="flex h-32 items-center justify-center text-gray-400">
+                <div className="flex h-32 items-center justify-center text-foreground-muted">
                   <ImageIcon size={24} />
                 </div>
               )}
-              <div className="p-2 text-xs text-gray-600 dark:text-gray-400 truncate">
+              <div className="truncate p-2 text-xs text-foreground-secondary">
                 {img.file.name}
                 {img.dimensions && (
-                  <span className="ml-1 text-gray-400">
+                  <span className="ml-1 text-foreground-muted">
                     ({img.dimensions.width}×{img.dimensions.height})
                   </span>
                 )}
@@ -82,44 +92,45 @@ export default function ImageDropZone({
       {showDropZone && (
         <motion.div
           whileTap={{ scale: 0.98 }}
+          role="button"
+          tabIndex={0}
+          aria-label={`Choose ${multiple ? 'images' : 'an image'} to upload`}
+          onClick={() => fileInputRef.current?.click()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-10 transition-colors ${
             isDragOver
-              ? 'border-primary-400 bg-primary-50 dark:bg-primary-900/30'
-              : 'border-gray-300 bg-white hover:border-primary-300 dark:border-gray-600 dark:bg-gray-800'
+              ? 'border-accent bg-accent-soft'
+              : 'border-input-border bg-input-background hover:border-accent/60'
           }`}
         >
-          <Upload className="mb-4 h-10 w-10 text-gray-400 dark:text-gray-500" />
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <Upload className="mb-4 h-10 w-10 text-foreground-muted" />
+          <p className="text-sm font-medium text-foreground">
             Drag & drop {multiple ? 'images' : 'an image'} here
           </p>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-xs text-foreground-muted">
             or
           </p>
           <Button
             variant="ghost"
             size="sm"
-            className="mt-2"
-            onClick={() => fileInputRef.current?.click()}
+            className="mt-2 pointer-events-none"
           >
             Browse files
           </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            multiple={multiple}
-            className="hidden"
-            onChange={onFileInput}
-          />
         </motion.div>
       )}
 
       {images.length > 0 && onClear && (
         <div className="flex justify-end">
-          <Button variant="ghost" size="sm" onClick={onClear} className="gap-1 text-gray-500">
+          <Button variant="ghost" size="sm" onClick={onClear} className="gap-1 text-foreground-muted hover:text-foreground">
             <X size={16} /> Clear all
           </Button>
         </div>

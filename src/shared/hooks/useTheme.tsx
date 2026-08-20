@@ -8,17 +8,32 @@ interface ThemeStore {
   setTheme: (t: Theme) => void;
 }
 
-const useThemeStore = create<ThemeStore>((set) => ({
-  theme: (typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ? 'dark'
-    : 'light',
-  toggleTheme: () =>
-    set((state) => ({
-      theme: state.theme === 'light' ? 'dark' : 'light',
-    })),
-  setTheme: (theme) => set({ theme }),
-}));
+const useThemeStore = create<ThemeStore>((set) => {
+  const getStoredTheme = (): Theme => {
+    if (typeof window === 'undefined') return 'light';
+    const stored = window.localStorage.getItem('imagecraft-theme');
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+
+  return {
+    theme: getStoredTheme(),
+    toggleTheme: () =>
+      set((state) => {
+        const nextTheme = state.theme === 'light' ? 'dark' : 'light';
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem('imagecraft-theme', nextTheme);
+        }
+        return { theme: nextTheme };
+      }),
+    setTheme: (theme) => {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('imagecraft-theme', theme);
+      }
+      set({ theme });
+    },
+  };
+});
 
 // Apply theme class to <html>
 export function useTheme() {
@@ -27,6 +42,7 @@ export function useTheme() {
   useEffect(() => {
     const root = document.documentElement;
     root.classList.toggle('dark', theme === 'dark');
+    root.style.colorScheme = theme === 'dark' ? 'dark' : 'light';
   }, [theme]);
 
   return { theme, toggleTheme };

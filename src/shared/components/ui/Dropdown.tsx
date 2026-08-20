@@ -21,7 +21,7 @@ export default function Dropdown({ button, children }: DropdownProps) {
         leaveFrom="transform opacity-100 scale-100"
         leaveTo="transform opacity-0 scale-95"
       >
-        <Menu.Items portal className="absolute right-0 mt-2 w-56 origin-top-right rounded-lg bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none dark:bg-gray-800 max-h-60 overflow-y-auto z-[var(--z-dropdown)]">
+        <Menu.Items portal className="absolute right-0 mt-2 w-56 origin-top-right rounded-xl border border-border bg-surface-elevated py-1 shadow-[var(--shadow-md)] ring-1 ring-border/60 focus:outline-none max-h-60 overflow-y-auto z-[var(--z-dropdown)]">
           {children}
         </Menu.Items>
       </Transition>

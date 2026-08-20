@@ -19,8 +19,10 @@ interface MetadataSection {
   id: string;
   icon: React.ReactNode;
   title: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 }
+
+type MetadataRecord = Record<string, unknown>;
 
 function formatBytes(bytes: number): string {
   if (bytes === 0) return '0 B';
@@ -34,7 +36,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
   const [sections, setSections] = useState<MetadataSection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [rawData, setRawData] = useState<any>(null);
+  const [rawData, setRawData] = useState<MetadataRecord | null>(null);
   const [showRaw, setShowRaw] = useState(false);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
@@ -58,7 +60,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
         if (cancelled) return;
         if (data) {
           setRawData(data);
-          const secs = buildSections(data, image);
+          const secs = buildSections(data as MetadataRecord, image);
           setSections(secs);
           if (secs.length > 0) {
             setExpandedSections(new Set([secs[0].id]));
@@ -72,7 +74,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
       .catch((err) => {
         if (cancelled) return;
         console.error('Metadata parse error:', err);
-        setError(err.message || 'Failed to parse metadata');
+        setError(err instanceof Error ? err.message : 'Failed to parse metadata');
         setLoading(false);
       });
 
@@ -81,11 +83,11 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
     };
   }, [image]);
 
-  function buildSections(data: any, image: ImageFile): MetadataSection[] {
+  function buildSections(data: MetadataRecord, image: ImageFile): MetadataSection[] {
     const sections: MetadataSection[] = [];
 
     // File info section
-    const fileInfo: Record<string, any> = {
+    const fileInfo: Record<string, unknown> = {
       'File Name': image.file.name,
       'File Size': formatBytes(image.file.size),
       'File Type': image.file.type || 'Unknown',
@@ -110,7 +112,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
       'FocalLengthIn35mmFormat', 'DigitalZoomRatio', 'SceneCaptureType',
       'GainControl', 'Contrast', 'Saturation', 'Sharpness', 'SubjectDistanceRange',
     ];
-    let camData: Record<string, any> = {};
+    const camData: Record<string, unknown> = {};
     for (const key of exifKeys) {
       if (data[key] !== undefined) {
         camData[key] = data[key];
@@ -126,7 +128,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
     }
 
     // GPS section
-    let gpsData: Record<string, any> = {};
+    let gpsData: Record<string, unknown> = {};
     if (data.latitude || data.longitude || data.GPSLatitude || data.GPSLongitude) {
       gpsData = {};
       if (data.latitude) gpsData['Latitude'] = data.latitude;
@@ -151,7 +153,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
       'City', 'SubLocation', 'ProvinceState', 'CountryPrimaryLocationName',
       'OriginalTransmissionReference', 'DateCreated', 'TimeCreated',
     ];
-    let iptcData: Record<string, any> = {};
+    const iptcData: Record<string, unknown> = {};
     for (const key of iptcKeys) {
       if (data[key] !== undefined) {
         iptcData[key] = data[key];
@@ -167,7 +169,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
     }
 
     // XMP section
-    let xmpData: Record<string, any> = {};
+    const xmpData: Record<string, unknown> = {};
     for (const key of Object.keys(data)) {
       if (key.startsWith('XMP') || key.startsWith('xmp')) {
         xmpData[key] = data[key];
@@ -197,7 +199,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
       ...exifKeys, 'ColorSpace', 'BitsPerSample', 'ICCProfile',
       ...Object.keys(fileInfo), ...Object.keys(camData), ...Object.keys(gpsData), ...iptcKeys,
     ]);
-    let otherData: Record<string, any> = {};
+    const otherData: Record<string, unknown> = {};
     for (const key of Object.keys(data)) {
       if (!usedKeys.has(key) && !key.startsWith('GPS') && !key.startsWith('XMP') && !key.startsWith('xmp')) {
         otherData[key] = data[key];
@@ -232,7 +234,7 @@ export default function MetadataControls({ image }: { image: ImageFile }) {
     setExpandedSections(new Set());
   };
 
-  const renderValue = (value: any) => {
+  const renderValue = (value: unknown) => {
     if (value === undefined || value === null) return '—';
     if (typeof value === 'object') return JSON.stringify(value);
     return String(value);

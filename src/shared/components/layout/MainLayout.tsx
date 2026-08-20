@@ -1,13 +1,12 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useRef, useEffect } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Sidebar from './Sidebar';
 import Breadcrumbs from '@/shared/components/seo/Breadcrumbs';
 import Container from '@/shared/components/ui/Container';
 import ScrollToTop from '@/shared/components/ScrollToTop';
-import AdSlot from '@/shared/components/ads/AdSlot';
-import { useRef, useEffect } from 'react';
 
 export default function MainLayout() {
   const location = useLocation();
@@ -23,8 +22,8 @@ export default function MainLayout() {
       <Navbar />
       <ScrollToTop />
 
-      <div className="flex flex-1 min-h-0">
-        <main ref={mainRef} className="flex-1 overflow-y-auto">
+      <div className="flex min-h-0 flex-1">
+        <main ref={mainRef} className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
@@ -43,18 +42,10 @@ export default function MainLayout() {
           </AnimatePresence>
         </main>
 
-        {/* Right sidebar – visible only on desktop */}
-        <Sidebar>
-          <AdSlot size="sidebar" />
-        </Sidebar>
+        <Sidebar />
       </div>
 
-      <Footer>
-        {/* Leaderboard ad in footer */}
-        <div className="mb-6 flex justify-center">
-          <AdSlot size="leaderboard" />
-        </div>
-      </Footer>
+      <Footer />
     </div>
   );
 }

@@ -1,11 +1,13 @@
 import { Helmet } from 'react-helmet-async';
 import HeroSection from './components/HeroSection';
-import FeaturesSection from './components/FeaturesSection';
-import ToolsShowcase from './components/ToolsShowcase';
-import HowItWorks from './components/HowItWorks';
-import StatsSection from './components/StatsSection';
-import CTASection from './components/CTASection';
-import ContactSection from './components/ContactSection';   // ← NEW
+import QuickActions from './components/QuickActions';
+import ToolSearch from './components/ToolSearch';
+import PopularTools from './components/PopularTools';
+import BentoTools from './components/BentoTools';
+import ToolCategories from './components/ToolCategories';
+import WhyImageCraft from './components/WhyImageCraft';
+import ContactSection from './components/ContactSection';
+import FinalCTA from './components/FinalCTA';
 
 export default function LandingPage() {
   return (
@@ -14,17 +16,32 @@ export default function LandingPage() {
         <title>ImageCraft – Professional Browser Image Tools</title>
         <meta
           name="description"
-          content="Compress, resize, crop, remove backgrounds, and more – all inside your browser. 100% free and private."
+          content="Edit, resize, compress, convert, and optimize images with simple browser-based tools built for creators and teams."
         />
+        <script type="application/ld+json">
+          {JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'WebApplication',
+            name: 'ImageCraft',
+            url: 'https://imagecrafttool.vercel.app/',
+            applicationCategory: 'MultimediaApplication',
+            operatingSystem: 'Web Browser',
+            description: 'Free browser-based image editing, conversion, compression, PDF, and background removal tools.',
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+            featureList: ['Image compressor', 'Image resizer', 'Image converter', 'Photo editor', 'Background remover', 'PDF tools'],
+          })}
+        </script>
       </Helmet>
 
       <HeroSection />
-      <FeaturesSection />
-      <ToolsShowcase />
-      <HowItWorks />
-      <StatsSection />
-      <CTASection />
-      <ContactSection />   {/* ← NEW – replaces Testimonials */}
+      <QuickActions />
+      <ToolSearch />
+      <PopularTools />
+      <BentoTools />
+      <ToolCategories />
+      <WhyImageCraft />
+      <ContactSection />
+      <FinalCTA />
     </>
   );
 }

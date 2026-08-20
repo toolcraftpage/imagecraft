@@ -7,6 +7,7 @@ const LandingPage = lazy(() => import('@/features/landing'));
 const ToolsPage = lazy(() => import('@/pages/ToolsPage'));
 const DonatePage = lazy(() => import('@/pages/DonatePage'));
 const PdfToolsPage = lazy(() => import('@/pages/PdfToolsPage'));
+const EditorPage = lazy(() => import('@/features/editor'));
 
 // Original live tools
 const CompressorPage = lazy(() => import('@/features/image-compressor'));
@@ -25,12 +26,16 @@ const TextOverlayPage = lazy(() => import('@/features/text-overlay'));
 const CollageMakerPage = lazy(() => import('@/features/collage-maker'));
 const PaletteExtractorPage = lazy(() => import('@/features/palette-extractor'));
 const FaviconGeneratorPage = lazy(() => import('@/features/favicon-generator'));
+const BackgroundRemoverPage = lazy(() => import('@/features/background-remover'));
 const PdfToImagePage = lazy(() => import('@/features/pdf-to-image'));
 const ImageToPdfPage = lazy(() => import('@/features/image-to-pdf'));
+const PdfMergePage = lazy(() => import('@/features/pdf-merge'));
+const WatermarkPage = lazy(() => import('@/features/watermark'));
 const MetadataViewerPage = lazy(() => import('@/features/metadata-viewer'));
 
 // Non‑live tools still use ComingSoonPage
 import ComingSoonPage from '@/pages/ComingSoonPage';
+import LegalPage from '@/pages/LegalPage';
 import { TOOLS, TOOL_PATH } from '@/shared/constants/routes';
 
 // ---- Loading fallback ----
@@ -58,11 +63,14 @@ export const router = createBrowserRouter([
       // Home
       { index: true, element: <Suspense fallback={<LoadingFallback />}><LandingPage /></Suspense> },
 
-      // Editor (coming soon)
-      { path: 'editor', element: <Suspense fallback={<LoadingFallback />}><ComingSoonPage /></Suspense> },
+      // Editor
+      { path: 'editor', element: <Suspense fallback={<LoadingFallback />}><EditorPage /></Suspense> },
 
       // Donate page
       { path: 'donate', element: <Suspense fallback={<LoadingFallback />}><DonatePage /></Suspense> },
+      { path: 'privacy', element: <LegalPage kind="privacy" /> },
+      { path: 'terms', element: <LegalPage kind="terms" /> },
+      { path: 'cookies', element: <LegalPage kind="cookies" /> },
 
       // PDF Tools page
       { path: 'pdf-tools', element: <Suspense fallback={<LoadingFallback />}><PdfToolsPage /></Suspense> },
@@ -89,7 +97,10 @@ export const router = createBrowserRouter([
       { path: 'tools/favicon-generator', element: <Suspense fallback={<LoadingFallback />}><FaviconGeneratorPage /></Suspense> },
       { path: 'tools/pdf-to-image', element: <Suspense fallback={<LoadingFallback />}><PdfToImagePage /></Suspense> },
       { path: 'tools/image-to-pdf', element: <Suspense fallback={<LoadingFallback />}><ImageToPdfPage /></Suspense> },
+      { path: 'tools/pdf-merge', element: <Suspense fallback={<LoadingFallback />}><PdfMergePage /></Suspense> },
+      { path: 'tools/watermark', element: <Suspense fallback={<LoadingFallback />}><WatermarkPage /></Suspense> },
       { path: 'tools/metadata-viewer', element: <Suspense fallback={<LoadingFallback />}><MetadataViewerPage /></Suspense> },
+      { path: 'tools/background-remover', element: <Suspense fallback={<LoadingFallback />}><BackgroundRemoverPage /></Suspense> },
 
       // ---- Non‑live tools (only background‑remover) ----
       ...comingSoonRoutes,

@@ -24,7 +24,7 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" />
+          <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -38,19 +38,19 @@ export default function Modal({ open, onClose, title, children, size = 'md' }: M
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className={`w-full ${maxWidth} transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all dark:bg-gray-800`}>
+              <Dialog.Panel className={`w-full ${maxWidth} transform overflow-hidden rounded-2xl border border-border bg-surface-elevated p-6 text-left align-middle shadow-[var(--shadow-lg)] transition-all`}>
                 {title && (
-                  <Dialog.Title as="h3" className="text-lg font-semibold text-gray-900 dark:text-white">
+                  <Dialog.Title as="h3" className="text-lg font-semibold text-foreground">
                     {title}
                   </Dialog.Title>
                 )}
                 <button
                   onClick={onClose}
-                  className="absolute right-4 top-4 rounded-full p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                  className="absolute right-4 top-4 rounded-full p-1 text-foreground-muted transition hover:text-foreground"
                 >
                   <X size={20} />
                 </button>
-                <div className="mt-4">{children}</div>
+                <div className="mt-4 text-foreground-secondary">{children}</div>
               </Dialog.Panel>
             </Transition.Child>
           </div>

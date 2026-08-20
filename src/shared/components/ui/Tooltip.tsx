@@ -37,7 +37,7 @@ export default function Tooltip({ content, children, placement = 'top' }: Toolti
             ref={refs.setFloating}
             style={floatingStyles}
             {...getFloatingProps()}
-            className="z-[var(--z-tooltip)] rounded-lg bg-gray-900 px-3 py-1.5 text-xs text-white shadow-lg dark:bg-gray-700"
+            className="z-[var(--z-tooltip)] rounded-lg border border-border bg-surface-elevated px-3 py-1.5 text-xs text-foreground shadow-[var(--shadow-md)]"
           >
             {content}
           </div>

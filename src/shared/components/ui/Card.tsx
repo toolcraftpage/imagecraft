@@ -10,11 +10,11 @@ type CardProps = HTMLMotionProps<'div'> & {
 export default function Card({ className, hover = true, padding = 'md', children, ...props }: CardProps) {
   return (
     <motion.div
-      whileHover={hover ? { y: -4, boxShadow: 'var(--shadow-card-hover)' } : undefined}
+      whileHover={hover ? { y: -6, boxShadow: '0 22px 60px rgba(99, 102, 241, 0.12)' } : undefined}
       transition={{ duration: 0.2 }}
       className={twMerge(
         clsx(
-          'rounded-card border border-gray-200/60 bg-surface shadow-card dark:border-gray-700/40 dark:bg-surface',
+          'rounded-[26px] border border-border bg-surface shadow-[var(--shadow-sm)] backdrop-blur-sm',
           {
             'p-0': padding === 'none',
             'p-4': padding === 'sm',

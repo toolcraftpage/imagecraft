@@ -13,45 +13,49 @@ export function useImageUpload({ maxFiles = 1 }: UseImageUploadOptions = {}) {
   const processFiles = useCallback(
     (files: FileList | File[]) => {
       const fileArray = Array.from(files).slice(0, maxFiles);
-      const newImages: ImageFile[] = [];
 
-      fileArray.forEach((file) => {
+      if (fileArray.length === 0) {
+        return;
+      }
+
+      const resolvedImages = fileArray.map((file) => {
         const error = validateImageFile(file);
         if (error) {
-          newImages.push({ file, preview: '', dimensions: null, error });
-          return;
+          return Promise.resolve({ file, preview: '', dimensions: null, error } satisfies ImageFile);
         }
 
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const dataUrl = e.target?.result as string;
-          const img = new Image();
-          img.onload = () => {
-            setImages((prev) =>
-              prev.map((imgFile) =>
-                imgFile.file === file
-                  ? {
-                      ...imgFile,
-                      preview: dataUrl,
-                      dimensions: { width: img.naturalWidth, height: img.naturalHeight },
-                      error: undefined,
-                    }
-                  : imgFile,
-              ),
-            );
-          };
-          img.src = dataUrl;
-        };
-        reader.readAsDataURL(file);
+        return new Promise<ImageFile>((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const dataUrl = typeof event.target?.result === 'string' ? event.target.result : '';
+            if (!dataUrl) {
+              resolve({ file, preview: '', dimensions: null, error: 'The selected file could not be opened.' });
+              return;
+            }
 
-        newImages.push({
-          file,
-          preview: '',
-          dimensions: null,
+            const img = new Image();
+            img.onload = () => {
+              resolve({
+                file,
+                preview: dataUrl,
+                dimensions: { width: img.naturalWidth, height: img.naturalHeight },
+              });
+            };
+            img.onerror = () => {
+              resolve({ file, preview: '', dimensions: null, error: 'The selected file could not be opened.' });
+            };
+            img.src = dataUrl;
+          };
+          reader.onerror = () => {
+            resolve({ file, preview: '', dimensions: null, error: 'The selected file could not be opened.' });
+          };
+          reader.readAsDataURL(file);
         });
       });
 
-      setImages((prev) => [...prev, ...newImages]);
+      Promise.all(resolvedImages).then((processedImages) => {
+        setImages(processedImages.slice(0, maxFiles));
+      });
     },
     [maxFiles],
   );
@@ -88,6 +92,7 @@ export function useImageUpload({ maxFiles = 1 }: UseImageUploadOptions = {}) {
     images,
     setImages,
     fileInputRef,
+    processFiles,
     handleDrop,
     handleFileInput,
     clearImages,

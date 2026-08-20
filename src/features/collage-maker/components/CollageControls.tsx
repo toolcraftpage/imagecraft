@@ -49,7 +49,7 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
 
     ctx.fillStyle = bgColor;
     ctx.beginPath();
-    (ctx as any).roundRect(0, 0, canvas.width, canvas.height, borderRadius);
+    ctx.roundRect(0, 0, canvas.width, canvas.height, borderRadius);
     ctx.fill();
 
     for (let r = 0; r < rows; r++) {
@@ -64,13 +64,13 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
         if (borderWidth > 0) {
           ctx.fillStyle = borderColor;
           ctx.beginPath();
-          (ctx as any).roundRect(x - borderWidth, y - borderWidth, cellW + 2 * borderWidth, cellH + 2 * borderWidth, borderRadius + borderWidth);
+          ctx.roundRect(x - borderWidth, y - borderWidth, cellW + 2 * borderWidth, cellH + 2 * borderWidth, borderRadius + borderWidth);
           ctx.fill();
         }
 
         ctx.save();
         ctx.beginPath();
-        (ctx as any).roundRect(x, y, cellW, cellH, borderRadius);
+        ctx.roundRect(x, y, cellW, cellH, borderRadius);
         ctx.clip();
         const scale = Math.max(cellW / img.width, cellH / img.height);
         const sw = img.width * scale;
@@ -84,7 +84,7 @@ export default function CollageControls({ images, onClear }: CollageControlsProp
           ctx.strokeStyle = borderColor;
           ctx.lineWidth = borderWidth;
           ctx.beginPath();
-          (ctx as any).roundRect(x, y, cellW, cellH, borderRadius);
+          ctx.roundRect(x, y, cellW, cellH, borderRadius);
           ctx.stroke();
         }
       }

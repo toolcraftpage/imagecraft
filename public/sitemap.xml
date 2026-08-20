@@ -18,7 +18,14 @@
   <url><loc>https://imagecrafttool.vercel.app/tools/favicon-generator</loc></url>
   <url><loc>https://imagecrafttool.vercel.app/tools/pdf-to-image</loc></url>
   <url><loc>https://imagecrafttool.vercel.app/tools/image-to-pdf</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/tools/pdf-merge</loc></url>
   <url><loc>https://imagecrafttool.vercel.app/tools/metadata-viewer</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/tools/watermark</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/tools/background-remover</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/editor</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/privacy</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/terms</loc></url>
+  <url><loc>https://imagecrafttool.vercel.app/cookies</loc></url>
   <url><loc>https://imagecrafttool.vercel.app/donate</loc></url>
   <url><loc>https://imagecrafttool.vercel.app/pdf-tools</loc></url>
 </urlset>
